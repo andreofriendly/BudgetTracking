@@ -1,9 +1,12 @@
 import { Cover } from "@/components/ui/cover";
 import { MacbookScroll } from "@/components/ui/macbook-scroll";
+import { Navigation } from "@/components/ui/navigation";
 
 export default function Home() {
   
-  return (
+  return <>
+    <Navigation/>
+    
     <section>
       
       <div className="mt-20 px-2">
@@ -21,5 +24,5 @@ export default function Home() {
         />
       </div>
     </section>
-  );
+    </>
 }
