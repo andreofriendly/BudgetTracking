@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { Button } from "@/components/ui/button"
 import {
@@ -33,8 +34,8 @@ import {
     TabsList,
     TabsTrigger,
   } from "@/components/ui/tabs"
-import { useState } from "react"
-import { addExpenseCategory, addIncomeCategory } from "@/actions/action"
+import { useEffect, useState } from "react"
+import { addExpenseCategory, addIncomeCategory, getExpenseCategories, getIncomeCategories } from "@/actions/action"
 
   
   
@@ -44,6 +45,22 @@ export default function Page(){
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
 
+    const [incomeCategories, setIncomeCategories] = useState<any[]>([]);
+    const [expenseCategories, setExpenseCategories] = useState<any[]>([]);
+
+    useEffect(() => {
+        const loadData = async () => {
+            try{
+                const incomeData = await getIncomeCategories();
+                const expenseData = await getExpenseCategories();
+                setIncomeCategories(incomeData);
+                setExpenseCategories(expenseData);
+            }catch(error){
+                console.log("Failed to load categories")
+            }
+        }
+        loadData();
+    }, []);
 
     const handleSubmit = async () => {
         try {
@@ -126,28 +143,53 @@ export default function Page(){
 
         {/* Tabs */}
 
-        <Tabs defaultValue="income" className="w-[400px]">
-            <TabsList className="grid w-full grid-cols-2">
+        <Tabs defaultValue="income">
+            <TabsList >
                 <TabsTrigger value="income">Income Category</TabsTrigger>
                 <TabsTrigger value="expenses">Expenses Category</TabsTrigger>
             </TabsList>
 
             {/* Income Category */}
             <TabsContent value="income">
-                <div className="rounded-xl h-36 flex items-center justify-between p-8 border-b shadow-sm">
-                    <div className="flex flex-col">
-                        <h2 className="text-lg font-semibold text-gray-700">Category Name</h2>
-                        <p className="text-3xl font-bold text-blue-600">Rp. 2.000.000</p>
-                    </div>
-                </div>
+                <section>
+                    {incomeCategories.length === 0 ? (
+                        <div className="rounded-xl h-36 flex items-center justify-between p-8 border-b shadow-sm">
+                            <p className="text-muted-foreground">No Income Categories Found</p>
+                        </div>
+                    ):(
+                        <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+                            {incomeCategories.map((category) => (
+                                <div key={`income-${category.id}`} className="rounded-xl h-36 flex items-center justify-between p-8 border-b shadow-sm">
+                                    <div className="flex flex-col">
+                                        <h2 className="text-lg font-semibold text-gray-700">{category.name}</h2>
+                                        <p className="text-3xl font-bold text-blue-600">Rp 2.000.000</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </section>
             </TabsContent>
+            {/* Income Category */}
             <TabsContent value="expenses">
-                <div className="rounded-xl h-36 flex items-center justify-between p-8 border-b shadow-sm">
-                    <div className="flex flex-col">
-                        <h2 className="text-lg font-semibold text-gray-700">Category Expenses</h2>
-                        <p className="text-3xl font-bold text-blue-600">Rp. 2.000.000</p>
-                    </div>
-                </div>
+                <section>
+                    {expenseCategories.length === 0 ? (
+                        <div className="rounded-xl h-36 flex items-center justify-between p-8 border-b shadow-sm">
+                            <p className="text-muted-foreground">No Income Categories Found</p>
+                        </div>
+                    ):(
+                        <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+                            {expenseCategories.map((category) => (
+                                <div key={`expense-${category.id}`} className="rounded-xl h-36 flex items-center justify-between p-8 border-b shadow-sm">
+                                    <div className="flex flex-col">
+                                        <h2 className="text-lg font-semibold text-gray-700">{category.name}</h2>
+                                        <p className="text-3xl font-bold text-blue-600">Rp 2.000.000</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </section>
             </TabsContent>
             </Tabs>
     </div>

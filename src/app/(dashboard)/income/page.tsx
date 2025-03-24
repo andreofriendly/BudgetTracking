@@ -1,3 +1,6 @@
+"use client"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { addIncome, getIncomeCategories } from "@/actions/action"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -29,6 +32,7 @@ import {
     TableHeader,
     TableRow,
   } from "@/components/ui/table"
+import { useEffect, useState } from "react"
    
   const invoices = [
     {
@@ -76,10 +80,49 @@ import {
   ]
 
 export default function Page(){
+  const [amount, setAmount] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [categories, setCategories] = useState<any[]>([])
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // const [incomeData, setIncomeData] = useState<any[]>([])
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const data = await getIncomeCategories();
+      setCategories(data);
+    };
+    fetchCategories();
+  },[]); 
+  
+  const handleSubmit = async () => {
+    if (!amount || !selectedCategory) {
+      console.log("please fill all fields");
+      return;
+    }
+    try {
+      setLoading(true);
+      await addIncome(parseFloat(amount), selectedCategory);
+      setOpen(false);
+      setLoading(false);
+    } catch (error) {
+      console.log("cant add the data")
+      setLoading(false);
+      setOpen(false);
+    }
+
+
+    setAmount("");
+    setSelectedCategory(null);
+  }
+
+  
+
     return(
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <div className="dialog">
-                <Dialog>
+                <Dialog  open={open} onOpenChange={setOpen}>
                     <DialogTrigger asChild>
                         <Button variant="outline">Add Income</Button>
                     </DialogTrigger>
@@ -95,27 +138,29 @@ export default function Page(){
                             <Label htmlFor="amount" className="text-right">
                             Amount
                             </Label>
-                            <Input id="amount" type="number" value="Pedro Duarte" className="col-span-3" placeholder="Enter Amount"/>
+                            <Input id="amount" type="number" value={amount} onChange={(e) => setAmount(e.target.value)} className="col-span-3" placeholder="Enter Amount"/>
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="username" className="text-right">
                             Category
                             </Label>
-                            <Select>
+                            <Select
+                            onValueChange={(value) => setSelectedCategory(Number(value))}
+                            > 
                                 <SelectTrigger className="col-span-3">
-                                    <SelectValue placeholder="Theme" />
+                                    <SelectValue placeholder="Select Category" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="light">Light</SelectItem>
-                                    <SelectItem value="dark">Dark</SelectItem>
-                                    <SelectItem value="system">System</SelectItem>
+                                  {categories.map((categories) => (
+                                    <SelectItem key={categories.id} value={categories.id.toString()}>{categories.name}</SelectItem>
+                                  ))}
                                 </SelectContent>
                             </Select>
 
                         </div>
                         </div>
                         <DialogFooter>
-                        <Button>Save changes</Button>
+                        <Button onClick={handleSubmit}>{loading ? "Adding..." : "Add Income" }</Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
