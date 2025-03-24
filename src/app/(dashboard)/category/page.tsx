@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -32,13 +33,43 @@ import {
     TabsList,
     TabsTrigger,
   } from "@/components/ui/tabs"
+import { useState } from "react"
+import { addExpenseCategory, addIncomeCategory } from "@/actions/action"
 
   
   
 export default function Page(){
+    const [name, setName] = useState("");
+    const [type, setType] = useState<"income" | "expense">("income");
+    const [loading, setLoading] = useState(false);
+    const [open, setOpen] = useState(false);
+
+
+    const handleSubmit = async () => {
+        try {
+            setLoading(true);
+            if (type === "income"){
+                await addIncomeCategory(name);
+                setLoading(false);
+                setOpen(false);
+            }else {
+                await addExpenseCategory(name);
+                setLoading(false);
+                setOpen(false);
+            }
+
+            //reset form after submit
+            setName("");
+            setType("income");
+        } catch(error){
+            console.log("Failed to add category")
+            setLoading(false);
+        }
+    };
+
     return<>
     <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <div className="rounded-xl h-36 flex items-center justify-center border-2 border-dashed bg-muted/50 cursor-pointer">
                     <div className="flex flex-col items-center">
@@ -59,26 +90,36 @@ export default function Page(){
                             <Label htmlFor="name" className="text-right">
                             Name
                             </Label>
-                            <Input id="name" className="col-span-3" placeholder="Enter Category Name"/>
+                            <Input id="name" 
+                            className="col-span-3" 
+                            placeholder="Enter Category Name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="category" className="text-right">
                             Category
                             </Label>
-                            <Select>
+                            <Select
+                            value={type}
+                            onValueChange={(value: "income" | "expense") => setType(value)}
+                            >
                                 <SelectTrigger className="col-span-3">
                                     <SelectValue placeholder="Select Category" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="light">Income</SelectItem>
-                                    <SelectItem value="dark">Expenses</SelectItem>
+                                    <SelectItem value="income">Income</SelectItem>
+                                    <SelectItem value="expense">Expenses</SelectItem>
                                 </SelectContent>
                             </Select>
-
                         </div>
                         </div>
                         <DialogFooter>
-                        <Button>Save changes</Button>
+                        <Button
+                        onClick={handleSubmit}
+                        disabled={loading}
+                        >{loading ? "Adding..." : "Add Category" }</Button>
                         </DialogFooter>
                     </DialogContent>
         </Dialog>
