@@ -60,8 +60,9 @@ export const getExpenses = async () => {
     const userId = await getCurrentUserId();
     return await db
     .select({
-        id:expenseCategories.id,
+        id:expense.id,
         amount:expense.amount,
+        categoryId: expense.categoryId,
         category:expenseCategories.name,
         createdAt:expense.createdAt,
     })
@@ -78,8 +79,9 @@ export const getIncome = async () => {
     const userId = await getCurrentUserId();
     return await db
     .select({
-        id:incomeCategories.id,
+        id:income.id,
         amount:income.amount,
+        categoryId: income.categoryId,
         category:incomeCategories.name,
         createdAt:income.createdAt,
     })
