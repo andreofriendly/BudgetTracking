@@ -19,7 +19,7 @@ export default function Home() {
       <div className="xl:mt-0 -mt-120">
         <MacbookScroll
 
-          src={`/linear.webp`}
+          src={`/section.png`}
           showGradient={false}
         />
       </div>
