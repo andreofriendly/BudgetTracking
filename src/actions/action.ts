@@ -28,16 +28,28 @@ export const addExpenseCategory = async (name: string) => {
 };
 
 //add Income
-export const addIncome = async (amount: number, categoryId: number) => {
+// Modified addIncome
+export const addIncome = async (
+    amount: number,
+    categoryId: number,
+    description: string,
+    tanggal: Date
+  ) => {
     const userId = await getCurrentUserId();
-    await db.insert(income).values({amount, categoryId, userId});
-};
+    await db.insert(income).values({ amount, categoryId, userId, description, tanggal });
+  };
 
-//add Expense
-export const addExpense = async (amount: number, categoryId: number) => {
+
+// Modified addExpense
+export const addExpense = async (
+    amount: number,
+    categoryId: number,
+    description: string,
+    tanggal: Date
+  ) => {
     const userId = await getCurrentUserId();
-    await db.insert(expense).values({amount, categoryId, userId});
-};
+    await db.insert(income).values({ amount, categoryId, userId, description, tanggal });
+  };
 
 //get All Expenses Categories
 export const getExpenseCategories = async () => {
@@ -64,6 +76,8 @@ export const getExpenses = async () => {
         amount:expense.amount,
         categoryId: expense.categoryId,
         category:expenseCategories.name,
+        description: income.description,
+        tanggal: income.tanggal,
         createdAt:expense.createdAt,
     })
     .from(expense)
@@ -76,19 +90,20 @@ export const getExpenses = async () => {
 
 //get all income records with the category names
 export const getIncome = async () => {
-    const userId = await getCurrentUserId();
-    return await db
+  const userId = await getCurrentUserId();
+  return await db
     .select({
-        id:income.id,
-        amount:income.amount,
-        categoryId: income.categoryId,
-        category:incomeCategories.name,
-        createdAt:income.createdAt,
+      id: income.id,
+      amount: income.amount,
+      categoryId: income.categoryId,
+      category: incomeCategories.name,
+      description: income.description,
+      tanggal: income.tanggal,
+      createdAt: income.createdAt,
     })
     .from(income)
-    .innerJoin(incomeCategories, eq (income.categoryId, incomeCategories.id))
-    .where(and(
-        eq(income.userId, userId),
-        eq(incomeCategories.userId, userId)
-    ));
-}
+    .innerJoin(incomeCategories, eq(income.categoryId, incomeCategories.id))
+    .where(
+      and(eq(income.userId, userId), eq(incomeCategories.userId, userId))
+    );
+};

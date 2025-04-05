@@ -98,11 +98,11 @@ export default function Page(){
       }
 
       //get initial advice ketika data load
-      useEffect(() => {
-            if (incomeData.length > 0 && expenseData.length> 0){
-                getFinancialAdvice();
-            }
-        }, [incomeData, expenseData]);
+    //   useEffect(() => {
+    //         if (incomeData.length > 0 && expenseData.length> 0){
+    //             getFinancialAdvice();
+    //         }
+    //     }, [incomeData, expenseData]);
 
     
     return<>

@@ -16,18 +16,23 @@ export const expenseCategories = pgTable("expense_categories",{
     userId: varchar("user_id").notNull().references(() => users.id)
 });
 
-export const income = pgTable("income",{
+export const income = pgTable("income", {
     id: serial("id").primaryKey(),
     amount: integer("amount").notNull(),
     categoryId: integer("category_id").notNull().references(() => incomeCategories.id),
     userId: varchar("user_id").notNull().references(() => users.id),
+    description: text("description"), // optional description
+    tanggal: timestamp("tanggal", { mode: "date" }).notNull(), // required date
     createdAt: timestamp("created_at").defaultNow(),
-});
+  });
+  
 
 export const expense = pgTable("expenses",{
     id: serial("id").primaryKey(),
     amount: integer("amount").notNull(),
     categoryId: integer("category_id").notNull().references(() => expenseCategories.id),
     userId: varchar("user_id").notNull().references(() => users.id),
+    description: text("description"), // optional description
+    tanggal: timestamp("tanggal", { mode: "date" }).notNull(), // required date
     createdAt: timestamp("created_at").defaultNow(),
 });
