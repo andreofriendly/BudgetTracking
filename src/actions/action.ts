@@ -48,7 +48,7 @@ export const addExpense = async (
     tanggal: Date
   ) => {
     const userId = await getCurrentUserId();
-    await db.insert(income).values({ amount, categoryId, userId, description, tanggal });
+    await db.insert(expense).values({ amount, categoryId, userId, description, tanggal });
   };
 
 //get All Expenses Categories
@@ -72,14 +72,15 @@ export const getExpenses = async () => {
     const userId = await getCurrentUserId();
     return await db
     .select({
-        id:expense.id,
-        amount:expense.amount,
+        id: expense.id,
+        amount: expense.amount,
         categoryId: expense.categoryId,
-        category:expenseCategories.name,
-        description: income.description,
-        tanggal: income.tanggal,
-        createdAt:expense.createdAt,
-    })
+        category: expenseCategories.name,
+        description: expense.description,
+        tanggal: expense.tanggal,       
+        createdAt: expense.createdAt,
+      })
+      
     .from(expense)
     .innerJoin(expenseCategories, eq (expense.categoryId, expenseCategories.id))
     .where(and(
