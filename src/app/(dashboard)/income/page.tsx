@@ -36,13 +36,15 @@ export default function Page() {
     fetchCategories();
   }, []);
 
+  const fetchIncome = async () => {
+    const data = await getIncome();
+    setIncomeData(data);
+  };
+  
   useEffect(() => {
-    const fetchIncome = async () => {
-      const data = await getIncome();
-      setIncomeData(data);
-    };
     fetchIncome();
   }, []);
+  
 
   const handleSubmit = async () => {
     if (!amount || !selectedCategory || !tanggal) {
@@ -52,6 +54,7 @@ export default function Page() {
     try {
       setLoading(true);
       await addIncome(parseFloat(amount), selectedCategory, description, new Date(tanggal));
+      await fetchIncome(); // <-- Refresh income list
       setOpen(false);
       setLoading(false);
     } catch (error) {
@@ -59,12 +62,13 @@ export default function Page() {
       setLoading(false);
       setOpen(false);
     }
-
+  
     setAmount("");
     setSelectedCategory(null);
     setDescription("");
     setTanggal("");
   };
+  
 
   function formatCurrency(amount: number) {
     return new Intl.NumberFormat("id-ID", {

@@ -60,24 +60,25 @@ export default function Page(){
         }).format(amount)
       }
       
-    useEffect(() => {
-        const loadData = async () => {
-            try{
-                const [incomeCategories, expenseCategories, incomeRecords, expenseRecords] = await Promise.all([
-                    getIncomeCategories(),
-                    getExpenseCategories(),
-                    getIncome(),
-                    getExpenses(),
-                ]);
-
-                setIncomeCategories(incomeCategories);
-                setExpenseCategories(expenseCategories);
-                setIncomeData(incomeRecords);
-                setExpenseData(expenseRecords);
-            }catch(error){
-                console.log("Failed to load categories")
-            }
+      const loadData = async () => {
+        try {
+            const [incomeCategories, expenseCategories, incomeRecords, expenseRecords] = await Promise.all([
+                getIncomeCategories(),
+                getExpenseCategories(),
+                getIncome(),
+                getExpenses(),
+            ]);
+    
+            setIncomeCategories(incomeCategories);
+            setExpenseCategories(expenseCategories);
+            setIncomeData(incomeRecords);
+            setExpenseData(expenseRecords);
+        } catch (error) {
+            console.log("Failed to load categories");
         }
+    };
+    
+    useEffect(() => {
         loadData();
     }, []);
 
@@ -108,6 +109,7 @@ export default function Page(){
                 setLoading(false);
                 setOpen(false);
             }
+            await loadData(); // 🔥 Refresh the UI with latest categories + data
 
             //reset form after submit
             setName("");
